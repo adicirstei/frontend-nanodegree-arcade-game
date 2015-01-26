@@ -6,6 +6,7 @@ var Enemy = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
+    this.reset();
 }
 
 // Update the enemy's position, required method for game
@@ -14,6 +15,11 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+    this.x += this.speed * dt;
+
+    if(this.x > 400) {
+      this.reset();
+    }
 }
 
 // Draw the enemy on the screen, required method for game
@@ -21,14 +27,64 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
+Enemy.prototype.reset = function() {
+  this.x = -100 - Math.floor(400* Math.random());
+  this.y = 100 + Math.floor(300* Math.random());
+  this.speed = 100 + Math.floor(400*Math.random());
+}
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
+var Player = function() {
+  this.sprite = 'images/char-boy.png';
+  this.reset();
+};
+
+Player.prototype.reset = function() {
+  this.x = 202;
+  this.y = 5*83 - 30;
+}
+
+
+Player.prototype.update = function(dt) {
+  if (this.y <= -30) {
+    this.reset();
+  }
+}
+
+
+Player.prototype.handleInput = function(direction) {
+  switch(direction) {
+    case 'left':
+      this.x = (this.x <= 101 ? 0 : this.x - 101);
+      break;
+    case 'right':
+      this.x = (this.x > 303 ? 404 : this.x + 101);
+      break;
+    case 'up':
+      this.y = (this.y <= 83 -30 ? -30 : this.y - 83);
+      break;
+    case 'down':
+      this.y = (this.y >= 5*83 - 30 ? 5*83 - 30 : this.y + 83);
+      break;
+  }
+}
+Player.prototype.render = function() {
+  ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
 
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
+
+
+var allEnemies = [new Enemy()];
+
+var player = new Player();
+
 
 
 
