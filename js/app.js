@@ -29,14 +29,24 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
+
+// reset method will be used to place an enemy object in the scene
+// at a random position and with a random speed
 Enemy.prototype.reset = function() {
   this.x = -101 - 101 * Math.floor(3* Math.random());
-  this.y = 56+83*Math.floor(3* Math.random());
+  this.line = Math.floor(3* Math.random()) + 1;
+  this.y = 83*this.line - 30;
   this.speed = 100 + Math.floor(300*Math.random());
+
 }
 
+
+// collide method checks for collisions between enemy and player
 Enemy.prototype.collide = function() {
-  if ((player.x < this.x + 100) && (player.x < this.x)) {
+  // compute the distance between current enemy and player
+  // if it's less than 80px I consider that they collide
+  var dist = Math.abs(player.x - this.x);
+  if (dist < 80 && this.line === player.line) {
     player.reset();
     return;
   }
@@ -51,13 +61,19 @@ var Player = function() {
   this.reset();
 };
 
+
+// reset method is used to (re)place the player at the starting position
 Player.prototype.reset = function() {
   this.x = 202;
-  this.y = 5*83 - 30;
+  this.line = 5;
+  this.y = this.line*83 - 30;
+
 }
 
 
 Player.prototype.update = function(dt) {
+
+  // if the player reached the water it is reset to original position
   if (this.y <= -30) {
     this.reset();
   }
@@ -72,12 +88,13 @@ Player.prototype.handleInput = function(direction) {
       this.x = (this.x > 303 ? 404 : this.x + 101);
       break;
     case 'up':
-      this.y = (this.y <= 83 -30 ? -30 : this.y - 83);
+      this.line = (this.line === 0 ? 0 : this.line - 1);
       break;
     case 'down':
-      this.y = (this.y >= 5*83 - 30 ? 5*83 - 30 : this.y + 83);
+      this.line = (this.line === 5 ? 5 : this.line + 1);
       break;
   }
+  this.y = this.line * 83 -30;
 }
 
 Player.prototype.render = function() {
@@ -94,9 +111,6 @@ Player.prototype.render = function() {
 var allEnemies = [new Enemy(), new Enemy(), new Enemy(), new Enemy()];
 
 var player = new Player();
-
-
-
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
